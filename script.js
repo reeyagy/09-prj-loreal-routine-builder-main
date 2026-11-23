@@ -193,12 +193,27 @@ async function sendMessages() {
     body: JSON.stringify({ messages }),
   });
 
-  if (!response.ok) {
-    throw new Error("Unable to get a response from the routine advisor.");
+  let data;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error("The routine advisor returned an invalid response.");
   }
 
-  const data = await response.json();
-  return data.choices[0].message.content;
+  if (!response.ok) {
+    throw new Error(
+      data.error?.message || "Unable to get a response from the routine advisor."
+    );
+  }
+
+  const reply = data.choices?.[0]?.message?.content;
+
+  if (typeof reply !== "string" || reply.trim() === "") {
+    throw new Error("The routine advisor did not return a valid message.");
+  }
+
+  return reply;
 }
 
 /* Generate a routine using only the products in selectedProducts */
