@@ -10,10 +10,7 @@ const chatWindow = document.getElementById("chatWindow");
 /* This map keeps track of products the user has selected */
 const selectedProducts = new Map();
 
-/*
-  This URL is for the class-hosted Cloudflare Worker.
-  It must be replaced with the worker URL supplied for this class.
-*/
+/* The class-hosted Cloudflare Worker URL */
 const workerUrl = "https://lorealworker.rgyanmot.workers.dev/";
 
 /* Keep the full conversation so follow-up questions have context */
