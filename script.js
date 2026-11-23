@@ -1,5 +1,6 @@
 /* Get references to DOM elements */
 const categoryFilter = document.getElementById("categoryFilter");
+const productSearch = document.getElementById("productSearch");
 const productsContainer = document.getElementById("productsContainer");
 const selectedProductsList = document.getElementById("selectedProductsList");
 const clearProductsButton = document.getElementById("clearProducts");
@@ -23,11 +24,52 @@ productsContainer.innerHTML = `
   </div>
 `;
 
+/* Keep all products available for seamless category and search filtering */
+let allProducts = [];
+
 /* Load product data from JSON file */
 async function loadProducts() {
+  if (allProducts.length > 0) return allProducts;
+
   const response = await fetch("products.json");
   const data = await response.json();
-  return data.products;
+  allProducts = data.products;
+  return allProducts;
+}
+
+/* Filter products by both the selected category and search text */
+async function filterAndDisplayProducts() {
+  const products = await loadProducts();
+  const selectedCategory = categoryFilter.value;
+  const searchText = productSearch.value.trim().toLowerCase();
+
+  const matchingProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "" || product.category === selectedCategory;
+
+    const searchableText = `
+      ${product.name}
+      ${product.brand}
+      ${product.category}
+      ${product.description}
+    `.toLowerCase();
+
+    const matchesSearch =
+      searchText === "" || searchableText.includes(searchText);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  if (matchingProducts.length === 0) {
+    productsContainer.innerHTML = `
+      <div class="placeholder-message">
+        No matching products found
+      </div>
+    `;
+    return;
+  }
+
+  displayProducts(matchingProducts);
 }
 
 /* Add or remove a product when its card is clicked */
@@ -158,19 +200,9 @@ function displayProducts(products) {
   updateSelectedCards();
 }
 
-/* Filter and display products when category changes */
-categoryFilter.addEventListener("change", async (e) => {
-  const products = await loadProducts();
-  const selectedCategory = e.target.value;
-
-  /* filter() creates a new array containing only products
-     where the category matches what the user selected */
-  const filteredProducts = products.filter(
-    (product) => product.category === selectedCategory
-  );
-
-  displayProducts(filteredProducts);
-});
+/* Event listeners for filters and search */
+categoryFilter.addEventListener("change", filterAndDisplayProducts);
+productSearch.addEventListener("input", filterAndDisplayProducts);
 
 /* Convert AI text into safe HTML while keeping line breaks */
 function formatMessage(text) {

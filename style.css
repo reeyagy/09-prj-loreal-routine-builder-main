@@ -36,26 +36,48 @@ body {
   margin-bottom: 10px;
 }
 
-/* category filter */
+/* Search and category filters */
 .search-section {
   margin: 30px 0;
   display: flex;
+  gap: 12px;
 }
 
+.search-section input,
 .search-section select {
-  width: 100%;
   padding: 16px;
   font-size: 18px;
   border: 2px solid #000;
   border-radius: 8px;
-  cursor: pointer;
   background-color: white;
   font-weight: 500;
+  font-family: inherit;
 }
 
+.search-section input {
+  flex: 1;
+}
+
+.search-section select {
+  width: 42%;
+  cursor: pointer;
+}
+
+.search-section input:focus,
 .search-section select:focus {
   outline: none;
   border-color: #666;
+}
+
+@media (max-width: 700px) {
+  .search-section {
+    flex-direction: column;
+  }
+
+  .search-section input,
+  .search-section select {
+    width: 100%;
+  }
 }
 
 /* chat section */
